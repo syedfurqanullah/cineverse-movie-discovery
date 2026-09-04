@@ -1,1 +1,1 @@
-# cine-verse-movie-discovery
+# cineverse-movie-discovery
