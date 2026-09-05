@@ -1,0 +1,32 @@
+# Environment & Secrets
+.env
+.env.*
+*.local
+*.key
+*.pem
+*.secret
+secrets.json
+
+# Dependencies
+node_modules/
+
+# Build & Coverage
+dist/
+build/
+coverage/
+.cache/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+ehthumbs.db

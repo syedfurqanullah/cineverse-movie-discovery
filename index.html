@@ -1,0 +1,758 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="CineVerse is a modern movie discovery platform to explore popular, trending, top-rated and upcoming movies."
+    />
+    <meta name="theme-color" content="#08090d" />
+    <title>CineVerse - Movies Discovery</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" href="favicon.svg" />
+  </head>
+
+  <body>
+    <!-- Accessibility shortcut for keyboard users. -->
+    <a class="skip-link" href="#main-content">Skip to content</a>
+
+    <!-- Sticky header with brand, primary navigation and quick actions. -->
+    <header class="site-header">
+      <div class="container header-container">
+        <a href="#home" class="logo" aria-label="CineVerse Home">
+          Cine<span>Verse</span>
+        </a>
+
+        <nav class="main-navigation" aria-label="Main navigation">
+          <ul class="navigation-list">
+            <li><a href="#home" class="nav-link active">Home</a></li>
+            <li><a href="#movies" class="nav-link">Movies</a></li>
+            <li><a href="#trending" class="nav-link">Trending</a></li>
+            <li><a href="#top-rated" class="nav-link">Top Rated</a></li>
+            <li><a href="#upcoming" class="nav-link">Upcoming</a></li>
+            <li><a href="#watchlist" class="nav-link">Watchlist</a></li>
+          </ul>
+        </nav>
+
+        <div class="header-actions">
+          <!-- Inline header search (always visible) -->
+          <form class="header-search" id="header-search-form">
+            <label for="header-search-input" class="sr-only"
+              >Search movies</label
+            >
+            <input
+              id="header-search-input"
+              class="header-search-input"
+              name="q"
+              placeholder="Search movies..."
+              autocomplete="off"
+            />
+            <button
+              type="submit"
+              class="icon-button header-search-submit"
+              aria-label="Search"
+            >
+              <img
+                src="./assets/search-icon-2.svg"
+                alt="Search"
+                class="icon-favicon"
+              />
+            </button>
+          </form>
+          <!-- search toggle removed; header search always visible -->
+
+          <a
+            href="#watchlist"
+            class="icon-button notification-button"
+            aria-label="Open watchlist"
+          >
+            <span aria-hidden="true">&#9825;</span>
+          </a>
+
+          <button
+            type="button"
+            class="menu-toggle"
+            aria-label="Open navigation menu"
+            aria-controls="mobile-navigation"
+            aria-expanded="false"
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Collapsible navigation for tablet layouts. -->
+    <nav
+      id="mobile-navigation"
+      class="mobile-navigation"
+      aria-label="Mobile navigation"
+    >
+      <ul class="mobile-navigation-list">
+        <li><a href="#home" class="mobile-nav-link active">Home</a></li>
+        <li><a href="#movies" class="mobile-nav-link">Movies</a></li>
+        <li><a href="#trending" class="mobile-nav-link">Trending</a></li>
+        <li><a href="#top-rated" class="mobile-nav-link">Top Rated</a></li>
+        <li><a href="#upcoming" class="mobile-nav-link">Upcoming</a></li>
+        <li><a href="#watchlist" class="mobile-nav-link">Watchlist</a></li>
+      </ul>
+    </nav>
+
+    <!-- Search panel stays hidden until opened from header or mobile nav. -->
+    <section
+      id="search-panel"
+      class="search-panel"
+      aria-label="Movie search"
+      hidden
+    >
+      <div class="container search-container">
+        <form class="search-form" id="search-form">
+          <label for="movie-search" class="sr-only">Search for movies</label>
+          <input
+            type="search"
+            id="movie-search"
+            name="movie"
+            class="search-input"
+            placeholder="Search by movie title..."
+            autocomplete="off"
+          />
+          <button type="submit" class="search-button">Search</button>
+        </form>
+        <div
+          class="search-history"
+          id="search-history"
+          aria-label="Recent searches"
+        ></div>
+      </div>
+    </section>
+
+    <main id="main-content" role="main">
+      <!-- Cinematic hero populated from trending movie data. -->
+      <section id="home" class="hero-section" aria-labelledby="hero-title">
+        <div class="hero-background">
+          <div class="hero-slides" id="hero-slides" aria-hidden="true"></div>
+        </div>
+
+        <div class="container hero-container">
+          <div class="hero-content">
+            <span class="hero-label">Featured Movie</span>
+            <h1 id="hero-title" class="hero-title">
+              Discover Your Next Favorite Movie
+            </h1>
+
+            <div class="hero-meta">
+              <span id="hero-rating">&#9733; 0.0</span>
+              <span id="hero-year">0000</span>
+              <span id="hero-runtime">Movie</span>
+            </div>
+
+            <p id="hero-overview" class="hero-description">
+              Explore the latest movies, timeless classics and exciting stories
+              from around the world.
+            </p>
+
+            <div class="hero-actions">
+              <button
+                type="button"
+                class="button button-primary"
+                id="hero-details-button"
+              >
+                View Details
+              </button>
+              <button
+                type="button"
+                class="button button-secondary"
+                id="hero-watchlist-button"
+              >
+                Add to Watchlist
+              </button>
+            </div>
+          </div>
+
+          <div
+            class="hero-pagination"
+            id="hero-pagination"
+            aria-label="Featured movie slides"
+          ></div>
+
+          <div class="hero-controls" aria-label="Hero slider controls">
+            <button
+              type="button"
+              class="hero-control"
+              id="hero-previous"
+              aria-label="Previous featured movie"
+            >
+              &#8592;
+            </button>
+            <button
+              type="button"
+              class="hero-control"
+              id="hero-pause"
+              aria-label="Pause featured movie slider"
+              aria-pressed="false"
+            >
+              &#10074;&#10074;
+            </button>
+            <button
+              type="button"
+              class="hero-control"
+              id="hero-next"
+              aria-label="Next featured movie"
+            >
+              &#8594;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Portfolio feature summary without adding a dashboard. -->
+      <section
+        class="portfolio-showcase"
+        aria-labelledby="project-overview-title"
+      >
+        <div class="container">
+          <!-- Project Snapshot header and title removed as requested -->
+
+          <div class="showcase-grid">
+            <!-- Premium showcase cards removed as requested -->
+          </div>
+        </div>
+      </section>
+
+      <div class="container movie-content">
+        <!-- Discovery filters demonstrate real API query controls. -->
+        <section class="discover-tools" aria-labelledby="discover-tools-title">
+          <div class="tools-header">
+            <div>
+              <span class="section-label">Explore Smarter</span>
+              <h2 id="discover-tools-title" class="section-title">
+                Discover Controls
+              </h2>
+            </div>
+            <button type="button" class="section-link" id="reset-filters">
+              Reset
+            </button>
+          </div>
+
+          <div class="controls-grid">
+            <label class="control-field" for="genre-filter">
+              <span>Genre</span>
+              <select id="genre-filter" class="control-input">
+                <option value="">All Genres</option>
+              </select>
+            </label>
+
+            <label class="control-field" for="sort-filter">
+              <span>Sort</span>
+              <select id="sort-filter" class="control-input">
+                <option value="popularity.desc">Popularity</option>
+                <option value="vote_average.desc">Rating</option>
+                <option value="primary_release_date.desc">Newest</option>
+                <option value="revenue.desc">Revenue</option>
+              </select>
+            </label>
+
+            <label class="control-field" for="year-filter">
+              <span>Year</span>
+              <input
+                type="number"
+                id="year-filter"
+                class="control-input"
+                placeholder="2026"
+                min="1900"
+                max="2030"
+              />
+            </label>
+          </div>
+
+          <div
+            class="movie-grid featured-results-grid"
+            id="discover-results"
+            aria-live="polite"
+          ></div>
+          <p class="results-status" id="discover-status" aria-live="polite"></p>
+          <button
+            type="button"
+            class="button button-secondary load-more-button"
+            id="discover-load-more"
+            hidden
+          >
+            Load More Movies
+          </button>
+        </section>
+
+        <!-- Trending movie rail. -->
+        <section
+          id="trending"
+          class="movie-section"
+          aria-labelledby="trending-title"
+        >
+          <div class="section-header">
+            <div>
+              <span class="section-label">What's Popular</span>
+              <h2 id="trending-title" class="section-title">Trending Now</h2>
+            </div>
+            <button type="button" class="section-link" data-section="trending">
+              Load More
+            </button>
+          </div>
+          <div class="movie-grid" id="trending-movies" aria-live="polite"></div>
+        </section>
+
+        <!-- Popular movie rail. -->
+        <section
+          id="movies"
+          class="movie-section"
+          aria-labelledby="popular-title"
+        >
+          <div class="section-header">
+            <div>
+              <span class="section-label">Discover</span>
+              <h2 id="popular-title" class="section-title">Popular Movies</h2>
+            </div>
+            <button type="button" class="section-link" data-section="popular">
+              Load More
+            </button>
+          </div>
+          <div class="movie-grid" id="popular-movies" aria-live="polite"></div>
+        </section>
+
+        <!-- Top-rated movie rail. -->
+        <section
+          id="top-rated"
+          class="movie-section"
+          aria-labelledby="top-rated-title"
+        >
+          <div class="section-header">
+            <div>
+              <span class="section-label">Highest Rated</span>
+              <h2 id="top-rated-title" class="section-title">Top Rated</h2>
+            </div>
+            <button type="button" class="section-link" data-section="top-rated">
+              Load More
+            </button>
+          </div>
+          <div
+            class="movie-grid"
+            id="top-rated-movies"
+            aria-live="polite"
+          ></div>
+        </section>
+
+        <!-- Upcoming movie rail. -->
+        <section
+          id="upcoming"
+          class="movie-section"
+          aria-labelledby="upcoming-title"
+        >
+          <div class="section-header">
+            <div>
+              <span class="section-label">Coming Soon</span>
+              <h2 id="upcoming-title" class="section-title">Upcoming Movies</h2>
+            </div>
+            <button type="button" class="section-link" data-section="upcoming">
+              Load More
+            </button>
+          </div>
+          <div class="movie-grid" id="upcoming-movies" aria-live="polite"></div>
+        </section>
+
+        <!-- Search results render only after a user query. -->
+        <section
+          id="search-results-section"
+          class="movie-section search-results-section"
+          aria-labelledby="search-results-title"
+          hidden
+        >
+          <div class="section-header">
+            <div>
+              <span class="section-label">Search</span>
+              <h2 id="search-results-title" class="section-title">
+                Search Results
+              </h2>
+            </div>
+            <button type="button" class="section-link" id="clear-search">
+              Clear
+            </button>
+          </div>
+          <div class="movie-grid" id="search-results" aria-live="polite"></div>
+          <p class="results-status" id="search-status" aria-live="polite"></p>
+          <button
+            type="button"
+            class="button button-secondary load-more-button"
+            id="search-load-more"
+            hidden
+          >
+            Load More Results
+          </button>
+        </section>
+
+        <!-- LocalStorage-powered saved movie collection. -->
+        <section
+          id="watchlist"
+          class="movie-section watchlist-section"
+          aria-labelledby="watchlist-title"
+        >
+          <div class="section-header">
+            <div>
+              <span class="section-label">Saved Picks</span>
+              <h2 id="watchlist-title" class="section-title">
+                My Watchlist
+                <span class="section-count" id="watchlist-count">0</span>
+              </h2>
+            </div>
+            <button type="button" class="section-link" id="clear-watchlist">
+              Clear
+            </button>
+          </div>
+          <div
+            class="movie-grid"
+            id="watchlist-movies"
+            aria-live="polite"
+          ></div>
+        </section>
+
+        <!-- Recently opened movies help the experience feel persistent. -->
+        <section
+          id="recently-viewed"
+          class="movie-section recently-viewed-section"
+          aria-labelledby="recently-viewed-title"
+        >
+          <div class="section-header">
+            <div>
+              <span class="section-label">Continue Browsing</span>
+              <h2 id="recently-viewed-title" class="section-title">
+                Recently Viewed
+                <span class="section-count" id="recently-viewed-count">0</span>
+              </h2>
+            </div>
+            <button
+              type="button"
+              class="section-link"
+              id="clear-recently-viewed"
+            >
+              Clear
+            </button>
+          </div>
+          <div
+            class="movie-grid"
+            id="recently-viewed-movies"
+            aria-live="polite"
+          ></div>
+        </section>
+
+        <!-- Shared empty, loading and error states for API-driven content. -->
+        <section class="empty-state" id="empty-state" hidden aria-live="polite">
+          <div class="empty-state-content">
+            <span class="empty-state-icon" aria-hidden="true">&#127916;</span>
+            <h2>No Movies Found</h2>
+            <p>Try searching with a different movie title.</p>
+          </div>
+        </section>
+
+        <section
+          class="loading-state"
+          id="loading-state"
+          hidden
+          aria-live="polite"
+          aria-busy="true"
+        >
+          <div class="loading-spinner" aria-hidden="true"></div>
+          <p>Loading movies...</p>
+        </section>
+
+        <section
+          class="error-state"
+          id="error-state"
+          hidden
+          aria-live="assertive"
+        >
+          <div class="error-state-content">
+            <span class="error-icon" aria-hidden="true">!</span>
+            <h2>Something Went Wrong</h2>
+            <p id="error-message">We couldn't load the movies right now.</p>
+            <button
+              type="button"
+              class="button button-primary"
+              id="retry-button"
+            >
+              Try Again
+            </button>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Movie details modal combines details, credits and trailer data. -->
+    <dialog
+      class="movie-modal"
+      id="movie-modal"
+      aria-labelledby="modal-movie-title"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div class="movie-modal-content">
+        <header class="modal-header">
+          <h2 class="modal-heading">Movie Details</h2>
+          <button
+            type="button"
+            class="modal-close"
+            id="modal-close"
+            aria-label="Close movie details"
+          >
+            &times;
+          </button>
+        </header>
+
+        <article class="movie-details">
+          <div class="movie-details-poster">
+            <img src="" alt="" id="modal-movie-poster" />
+          </div>
+
+          <div class="movie-details-content">
+            <span class="movie-details-label" id="modal-movie-status">
+              Movie
+            </span>
+            <h2 id="modal-movie-title" class="movie-details-title">
+              Movie Title
+            </h2>
+
+            <div class="movie-details-meta">
+              <span id="modal-movie-rating">&#9733; 0.0</span>
+              <span id="modal-movie-year">0000</span>
+              <span id="modal-movie-runtime">0 min</span>
+            </div>
+
+            <div class="movie-genres" id="modal-movie-genres"></div>
+
+            <p class="movie-tagline" id="modal-movie-tagline"></p>
+
+            <p class="movie-details-overview" id="modal-movie-overview">
+              Movie overview will appear here.
+            </p>
+
+            <dl class="movie-information">
+              <div>
+                <dt>Release Date</dt>
+                <dd id="modal-release-date">&mdash;</dd>
+              </div>
+              <div>
+                <dt>Language</dt>
+                <dd id="modal-language">&mdash;</dd>
+              </div>
+              <div>
+                <dt>Popularity</dt>
+                <dd id="modal-popularity">&mdash;</dd>
+              </div>
+              <div>
+                <dt>Director</dt>
+                <dd id="modal-director">&mdash;</dd>
+              </div>
+              <div>
+                <dt>Studio</dt>
+                <dd id="modal-studio">&mdash;</dd>
+              </div>
+            </dl>
+
+            <div class="movie-details-actions">
+              <button
+                type="button"
+                class="button button-primary"
+                id="modal-watchlist-button"
+              >
+                Add to Watchlist
+              </button>
+              <a
+                href="#"
+                class="button button-secondary"
+                id="modal-trailer-link"
+                target="_blank"
+                rel="noopener noreferrer"
+                hidden
+              >
+                Watch Trailer
+              </a>
+              <!-- TMDB external link intentionally removed for focused details view -->
+            </div>
+
+            <section
+              class="trailer-section"
+              id="modal-trailer-section"
+              hidden
+              aria-labelledby="trailer-title"
+            >
+              <h3 id="trailer-title">Official Trailer</h3>
+              <p class="trailer-note">
+                Open the trailer in a new tab to watch the official video.
+              </p>
+            </section>
+
+            <section class="cast-section" aria-labelledby="cast-title">
+              <h3 id="cast-title">Top Cast</h3>
+              <div class="cast-list" id="modal-cast-list"></div>
+            </section>
+          </div>
+        </article>
+      </div>
+    </dialog>
+
+    <!-- Footer keeps secondary navigation and attribution available. -->
+    <footer class="site-footer">
+      <div class="container footer-container">
+        <div class="footer-brand">
+          <a href="#home" class="logo">Cine<span>Verse</span></a>
+          <p>Discover movies. Explore stories. Find your next favorite.</p>
+        </div>
+
+        <nav class="footer-navigation" aria-label="Footer navigation">
+          <div class="footer-column">
+            <h3>Explore</h3>
+            <ul>
+              <li><a href="#movies">Movies</a></li>
+              <li><a href="#trending">Trending</a></li>
+              <li><a href="#top-rated">Top Rated</a></li>
+              <li><a href="#upcoming">Upcoming</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-column">
+            <h3>CineVerse</h3>
+            <ul>
+              <li><a href="#watchlist">Watchlist</a></li>
+              <li><a href="#home">Home</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-column contact-column">
+            <h3>Contact</h3>
+            <div class="contact-card">
+              <p class="contact-text">
+                Have a project or want to collaborate? Find me here or drop a
+                message.
+              </p>
+              <div class="contact-actions">
+                <a
+                  href="https://github.com/syedfurqanullah"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="btn btn-ghost"
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 16 16"
+                    fill="currentColor"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2 .37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.22 2.2.82a7.6 7.6 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.28.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.19 0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8z"
+                    />
+                  </svg>
+                  <span>GitHub</span>
+                </a>
+
+                <a
+                  href="https://www.linkedin.com/in/syed-furqan-ullah"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="btn btn-ghost btn-linkedin"
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM0 8h5v12H0zM7.5 8h4.78v1.71h.07c.67-1.27 2.3-2.61 4.73-2.61 5.06 0 6 3.33 6 7.66V20h-5V14.5c0-1.31-.02-3-1.83-3-1.83 0-2.11 1.43-2.11 2.9V20h-5V8z"
+                    />
+                  </svg>
+                  <span>LinkedIn</span>
+                </a>
+
+                <a
+                  href="mailto:syedfurqanullahh@gmail.com"
+                  class="btn btn-primary"
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M3 8.5v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <path
+                      d="M21 8.5l-9 6-9-6"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  <span>Email</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </nav>
+      </div>
+
+      <div class="footer-bottom">
+        <div class="container">
+          <p>&copy; 2026 CineVerse. All rights reserved.</p>
+          <a href="#main-content" class="back-to-top" aria-label="Back to top"
+            >Back to top</a
+          >
+        </div>
+      </div>
+    </footer>
+
+    <noscript>
+      <div class="noscript-message">
+        CineVerse needs JavaScript enabled to load movie data from TMDB.
+      </div>
+    </noscript>
+
+    <!-- Toast messages provide non-blocking feedback for saved actions. -->
+    <div class="toast-region" id="toast-region" aria-live="polite"></div>
+
+    <!-- Thumb-friendly mobile navigation for core user actions. -->
+    <nav class="mobile-bottom-navigation" aria-label="Mobile bottom navigation">
+      <a href="#home" class="bottom-nav-link active">
+        <span aria-hidden="true">&#8962;</span>
+        <span>Home</span>
+      </a>
+      <a href="#search-panel" class="bottom-nav-link" data-open-search>
+        <img
+          src="./assets/search-icon-2.svg"
+          alt=""
+          class="icon-favicon"
+          aria-hidden="true"
+        />
+        <span>Search</span>
+      </a>
+      <a href="#movies" class="bottom-nav-link">
+        <span aria-hidden="true">&#9638;</span>
+        <span>Movies</span>
+      </a>
+      <a href="#watchlist" class="bottom-nav-link">
+        <span aria-hidden="true">&#9825;</span>
+        <span>Watchlist</span>
+      </a>
+    </nav>
+
+    <script type="module" src="script.js"></script>
+  </body>
+</html>
