@@ -1,6 +1,6 @@
 # CineVerse — Movie Discovery
 
-CineVerse is a modern movie discovery frontend built with HTML, Modern CSS, and JavaScript(ES6+) . It integrates the TMDB API for movie discovery, search, filters, and watchlist management.
+CineVerse is a premium, modern, and fully responsive movie discovery web app built with a focus on clean UI design, dynamic movie data, responsive layouts, and interactive user experiences.
 
 Focused on responsive design, clean UI, and a smooth user experience.
 
