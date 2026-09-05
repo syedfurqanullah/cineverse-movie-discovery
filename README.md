@@ -2,8 +2,6 @@
 
 CineVerse is a premium, modern, and fully responsive movie discovery web app built with a focus on clean UI design, dynamic movie data, responsive layouts, and interactive user experiences.
 
-Focused on responsive design, clean UI, and a smooth user experience.
-
 ## Live Demo 
 CineVerse — Movie Discovery Landing Page
 https://cineverse-movie-discovery.netlify.app/
@@ -75,7 +73,7 @@ http://localhost:8000
 
 ## Notes
 
-This project was built to strengthen my skills in frontend development, responsive design, UI/UX, and JavaScript while creating a realistic, user-focused web experience.
+This project was built as a practical frontend project to strengthen my skills in JavaScript, API integration, responsive design, and creating interactive user experiences.
 
 ## Author
 
