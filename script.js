@@ -30,6 +30,7 @@ const elements = {
   searchForm: document.querySelector("#search-form"),
   headerSearchForm: document.querySelector("#header-search-form"),
   headerSearchInput: document.querySelector("#header-search-input"),
+  headerSearchHistory: document.querySelector("#header-search-history"),
   headerSearchClose: document.querySelector(".header-search-close"),
   searchInput: document.querySelector("#movie-search"),
   genreFilter: document.querySelector("#genre-filter"),
@@ -1214,6 +1215,37 @@ function renderSearchHistory() {
   clear.addEventListener("click", clearSearchHistory);
 
   container.append(list, clear);
+
+  // Also render a compact version for the header search history dropdown
+  const headerContainer = elements.headerSearchHistory;
+  if (headerContainer) {
+    headerContainer.innerHTML = "";
+
+    if (!items.length) {
+      headerContainer.hidden = true;
+    } else {
+      const hlist = document.createElement("div");
+      hlist.className = "search-history-list";
+
+      items.forEach((q) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "search-history-item";
+        btn.textContent = q;
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          if (elements.headerSearchInput) elements.headerSearchInput.value = q;
+          elements.searchInput.value = q;
+          performSearch(q);
+          headerContainer.hidden = true;
+        });
+        hlist.append(btn);
+      });
+
+      headerContainer.append(hlist);
+      headerContainer.hidden = true;
+    }
+  }
 }
 
 function createStoredMovie(movie) {
@@ -1660,6 +1692,39 @@ function setupEventListeners() {
       performSearch(q);
     }
   });
+  // Header search history interactions
+  if (elements.headerSearchInput && elements.headerSearchHistory) {
+    elements.headerSearchInput.addEventListener("focus", () => {
+      const list = getSearchHistory();
+      elements.headerSearchHistory.hidden = !list.length;
+    });
+
+    elements.headerSearchInput.addEventListener("input", (e) => {
+      const q = e.target.value.trim().toLowerCase();
+      const headerContainer = elements.headerSearchHistory;
+      if (!headerContainer) return;
+      const buttons = headerContainer.querySelectorAll(".search-history-item");
+      let anyVisible = false;
+      buttons.forEach((btn) => {
+        const match = btn.textContent.toLowerCase().includes(q);
+        btn.style.display = match ? "block" : "none";
+        if (match) anyVisible = true;
+      });
+      headerContainer.hidden = !anyVisible;
+    });
+
+    // Close header history when clicking outside
+    document.addEventListener("click", (ev) => {
+      const target = ev.target;
+      if (!elements.headerSearchHistory || !elements.headerSearchInput) return;
+      if (
+        !elements.headerSearchForm.contains(target) &&
+        !elements.headerSearchHistory.contains(target)
+      ) {
+        elements.headerSearchHistory.hidden = true;
+      }
+    });
+  }
   elements.searchForm.addEventListener("submit", handleSearch);
   elements.searchInput.addEventListener("input", debouncedSearch);
   elements.genreFilter.addEventListener("change", loadDiscoverResults);
@@ -1719,6 +1784,13 @@ function setupEventListeners() {
 
   document.querySelectorAll('a[href="#search-panel"]').forEach((link) => {
     link.addEventListener("click", () => toggleSearchPanel(true));
+  });
+
+  document.querySelectorAll('a[href="#header-search-input"]').forEach((link) => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (elements.headerSearchInput) elements.headerSearchInput.focus();
+    });
   });
 
   // header search is always visible now; no outside-click closing needed
