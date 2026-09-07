@@ -1,3 +1,6 @@
+/.env
+/.netlify
+node_modules/
 # Environment & Secrets
 .env
 .env.*

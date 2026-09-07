@@ -1,10 +1,11 @@
-# CineVerse — Movie Discovery
+
+# cineverse-movie-discovery
 
 CineVerse is a premium, modern, and fully responsive movie discovery web app built with a focus on clean UI design, dynamic movie data, responsive layouts, and interactive user experiences.
 
-## Live Demo 
-CineVerse — Movie Discovery Landing Page
-https://cineverse-movie-discovery.netlify.app/
+## 🚀 Live Demo
+
+[**View CineVerse Live →**](https://cineverse-movie-discovery.netlify.app/)
 
 ## 📸 Screenshots
 
@@ -42,18 +43,22 @@ https://cineverse-movie-discovery.netlify.app/
 - Modern CSS3
 - JavaScript (ES6+)
 - Fetch API
-- localStorage for persistence
-- TMDB (The Movie Database) API for movie data
+- TMDB API
+- Netlify Functions
+- LocalStorage
 
 ## Project structure
 
-```
+```text
 index.html
 style.css
 script.js
 api.js
 screenshots/
-assets/   
+assets/
+netlify/
+└── functions/
+    └── tmdb.js
 README.md
 ```
 
@@ -69,6 +74,26 @@ Then visit:
 
 ```text
 http://localhost:8000
+
+## Netlify local development
+
+This project uses a Netlify Function to keep the TMDB API key server-side.
+
+1. Create a local `.env` (do NOT commit it):
+
+```
+TMDB_API_KEY=your_tmdb_api_key_here
+```
+
+2. Install Netlify CLI if needed and run local dev (serves functions + site):
+
+```bash
+npx netlify-cli@latest login
+npx netlify-cli@latest dev
+```
+
+3.  In production, add `TMDB_API_KEY` to your Netlify site Environment variables (Site settings → Build & deploy → Environment).
+
 ```
 
 ## Notes
