@@ -6,6 +6,24 @@ CineVerse is a premium, modern, and fully responsive movie discovery web app bui
 
 [View CineVerse Movie Discovery](https://cineverse-movie-discovery.netlify.app/)
 
+## 📸 Screenshots
+
+### Home Page
+
+![CineVerse Home](./screenshots/home.png)
+
+### Movie Discovery & Filters
+
+![CineVerse Movie Filter](./screenshots/movie%20filter.png)
+
+### Movie Details
+
+![CineVerse Movie Details](./screenshots/movie%20details.png)
+
+### Responsive Design
+
+![CineVerse Responsive](./screenshots/responsive%20design.png)
+
 ## Features
 
 - Fully responsive movie discovery UI
