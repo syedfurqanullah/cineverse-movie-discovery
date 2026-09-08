@@ -31,7 +31,6 @@ const elements = {
   headerSearchForm: document.querySelector("#header-search-form"),
   headerSearchInput: document.querySelector("#header-search-input"),
   headerSearchHistory: document.querySelector("#header-search-history"),
-  headerSearchClose: document.querySelector(".header-search-close"),
   searchInput: document.querySelector("#movie-search"),
   genreFilter: document.querySelector("#genre-filter"),
   sortFilter: document.querySelector("#sort-filter"),
@@ -108,6 +107,8 @@ const WATCHLIST_STORAGE_KEY = "cineverse-watchlist";
 const RECENTLY_VIEWED_STORAGE_KEY = "cineverse-recently-viewed";
 const HERO_SLIDE_INTERVAL = 7000;
 const SEARCH_DEBOUNCE_DELAY = 450;
+const SEARCH_SUGGESTION_DEBOUNCE_DELAY = 220;
+const SEARCH_SUGGESTION_MIN_LENGTH = 2;
 const SKELETON_CARD_COUNT = 6;
 const RECENTLY_VIEWED_LIMIT = 12;
 const SEARCH_HISTORY_KEY = "cineverse-search-history";
@@ -131,6 +132,8 @@ const state = {
   discoverTotalPages: 1,
   searchRequestId: 0,
   discoverRequestId: 0,
+  suggestionRequestId: 0,
+  lastSuggestionQuery: "",
   heroPaused: false,
   lastFocusedElement: null,
   pages: {
@@ -1150,7 +1153,7 @@ function getSearchHistory() {
   try {
     const raw = localStorage.getItem(SEARCH_HISTORY_KEY);
     const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed : [];
+    return Array.isArray(parsed) ? parsed.map(String).filter(Boolean) : [];
   } catch {
     return [];
   }
@@ -1158,7 +1161,14 @@ function getSearchHistory() {
 
 function saveSearchHistory(list) {
   try {
-    localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(list));
+    const cleaned = Array.from(
+      new Set(
+        (Array.isArray(list) ? list : [])
+          .map((q) => String(q).trim())
+          .filter(Boolean),
+      ),
+    ).slice(0, SEARCH_HISTORY_LIMIT);
+    localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(cleaned));
   } catch (e) {
     // ignore
   }
@@ -1167,9 +1177,20 @@ function saveSearchHistory(list) {
 function addToSearchHistory(query) {
   if (!query) return;
   const normalized = query.trim();
+  if (!normalized) return;
   const list = getSearchHistory().filter((q) => q !== normalized);
   list.unshift(normalized);
-  saveSearchHistory(list.slice(0, SEARCH_HISTORY_LIMIT));
+  saveSearchHistory(list);
+  renderSearchHistory();
+}
+
+function removeSearchHistoryItem(query) {
+  if (!query) return;
+  const normalized = query.trim();
+  if (!normalized) return;
+
+  const list = getSearchHistory().filter((q) => q !== normalized);
+  saveSearchHistory(list);
   renderSearchHistory();
 }
 
@@ -1178,17 +1199,25 @@ function clearSearchHistory() {
   renderSearchHistory();
 }
 
-function renderSearchHistory() {
-  const container = elements.searchHistory;
+function renderHistoryList(
+  container,
+  items,
+  {
+    onSelect,
+    onDelete,
+    emptyMessage,
+    allowDelete = true,
+    compact = false,
+  } = {},
+) {
   if (!container) return;
 
-  const items = getSearchHistory();
   container.innerHTML = "";
 
   if (!items.length) {
     const hint = document.createElement("div");
     hint.className = "search-history-hint";
-    hint.textContent = "Recent searches will appear here.";
+    hint.textContent = emptyMessage;
     container.append(hint);
     return;
   }
@@ -1197,53 +1226,154 @@ function renderSearchHistory() {
   list.className = "search-history-list";
 
   items.forEach((q) => {
+    const row = document.createElement("div");
+    row.className = `search-history-row${compact ? " is-compact" : ""}`;
+
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "search-history-item";
     btn.textContent = q;
-    btn.addEventListener("click", () => {
-      elements.searchInput.value = q;
-      performSearch(q);
+    btn.addEventListener("click", (event) => {
+      event.preventDefault();
+      onSelect?.(q);
     });
-    list.append(btn);
+
+    row.append(btn);
+
+    if (allowDelete) {
+      const deleteButton = document.createElement("button");
+      deleteButton.type = "button";
+      deleteButton.className = "search-history-delete";
+      deleteButton.setAttribute(
+        "aria-label",
+        `Delete ${q} from search history`,
+      );
+      deleteButton.textContent = "×";
+      deleteButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        onDelete?.(q);
+      });
+      row.append(deleteButton);
+    }
+
+    list.append(row);
   });
 
-  const clear = document.createElement("button");
-  clear.type = "button";
-  clear.className = "search-history-clear";
-  clear.textContent = "Clear history";
-  clear.addEventListener("click", clearSearchHistory);
+  container.append(list);
+}
 
-  container.append(list, clear);
+function renderSearchHistory() {
+  const mainContainer = elements.searchHistory;
+  if (mainContainer) {
+    renderHistoryList(mainContainer, getSearchHistory(), {
+      emptyMessage: "Recent searches will appear here.",
+      onSelect: (query) => {
+        elements.searchInput.value = query;
+        performSearch(query);
+      },
+      onDelete: (query) => removeSearchHistoryItem(query),
+    });
 
-  // Also render a compact version for the header search history dropdown
+    const clear = document.createElement("button");
+    clear.type = "button";
+    clear.className = "search-history-clear";
+    clear.textContent = "Clear history";
+    clear.addEventListener("click", clearSearchHistory);
+
+    if (mainContainer.querySelector(".search-history-clear") === null) {
+      mainContainer.append(clear);
+    }
+  }
+
   const headerContainer = elements.headerSearchHistory;
   if (headerContainer) {
-    headerContainer.innerHTML = "";
+    renderHistoryList(headerContainer, getSearchHistory(), {
+      emptyMessage: "Recent searches will appear here.",
+      compact: true,
+      onSelect: (query) => {
+        if (elements.headerSearchInput)
+          elements.headerSearchInput.value = query;
+        elements.searchInput.value = query;
+        performSearch(query);
+        headerContainer.hidden = true;
+      },
+      onDelete: (query) => removeSearchHistoryItem(query),
+    });
+    headerContainer.hidden = !getSearchHistory().length;
+  }
+}
 
-    if (!items.length) {
-      headerContainer.hidden = true;
-    } else {
-      const hlist = document.createElement("div");
-      hlist.className = "search-history-list";
+async function updateLiveSuggestions(
+  input,
+  container,
+  { source = "main" } = {},
+) {
+  const query = input.value.trim();
+  if (!query) {
+    renderSearchHistory();
+    if (container) container.hidden = true;
+    return;
+  }
 
-      items.forEach((q) => {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "search-history-item";
-        btn.textContent = q;
-        btn.addEventListener("click", (e) => {
-          e.preventDefault();
-          if (elements.headerSearchInput) elements.headerSearchInput.value = q;
-          elements.searchInput.value = q;
-          performSearch(q);
-          headerContainer.hidden = true;
-        });
-        hlist.append(btn);
-      });
+  if (query.length < SEARCH_SUGGESTION_MIN_LENGTH) {
+    if (container) container.innerHTML = "";
+    if (container) container.hidden = true;
+    return;
+  }
 
-      headerContainer.append(hlist);
-      headerContainer.hidden = true;
+  if (
+    query === state.lastSuggestionQuery &&
+    container &&
+    !container.hidden &&
+    container.dataset.source === source
+  ) {
+    return;
+  }
+
+  state.lastSuggestionQuery = query;
+  const requestId = (state.suggestionRequestId += 1);
+
+  try {
+    const data = await searchMovies(query, 1);
+    if (requestId !== state.suggestionRequestId) {
+      return;
+    }
+
+    const suggestions = normalizeMovies(data.results)
+      .map((movie) => movie.title)
+      .filter(
+        (title, index, titles) => title && titles.indexOf(title) === index,
+      )
+      .slice(0, 6);
+
+    if (!container) {
+      return;
+    }
+
+    container.dataset.source = source;
+    if (!suggestions.length) {
+      container.hidden = true;
+      return;
+    }
+
+    renderHistoryList(container, suggestions, {
+      emptyMessage: "No matching movies found.",
+      allowDelete: false,
+      compact: source === "header",
+      onSelect: (title) => {
+        input.value = title;
+        if (source === "header" && elements.headerSearchInput) {
+          elements.headerSearchInput.value = title;
+        }
+        performSearch(title);
+        container.hidden = true;
+      },
+    });
+    container.hidden = false;
+  } catch {
+    if (container) {
+      container.hidden = true;
     }
   }
 }
@@ -1333,11 +1463,6 @@ function closeMobileNavigation() {
 function toggleSearchPanel(forceOpen = false) {
   const shouldOpen = forceOpen || elements.searchPanel.hidden;
   elements.searchPanel.hidden = !shouldOpen;
-  if (elements.searchToggle) {
-    elements.searchToggle.setAttribute("aria-expanded", String(shouldOpen));
-    elements.searchToggle.classList.toggle("is-active", shouldOpen);
-  }
-
   if (shouldOpen) {
     elements.searchInput.focus();
   }
@@ -1681,6 +1806,26 @@ function setupEventListeners() {
     }
   }, SEARCH_DEBOUNCE_DELAY);
 
+  const debouncedSuggestions = debounce(() => {
+    updateLiveSuggestions(elements.searchInput, elements.searchHistory, {
+      source: "main",
+    });
+  }, SEARCH_SUGGESTION_DEBOUNCE_DELAY);
+
+  const debouncedHeaderSuggestions = debounce(() => {
+    if (!elements.headerSearchInput || !elements.headerSearchHistory) {
+      return;
+    }
+
+    updateLiveSuggestions(
+      elements.headerSearchInput,
+      elements.headerSearchHistory,
+      {
+        source: "header",
+      },
+    );
+  }, SEARCH_SUGGESTION_DEBOUNCE_DELAY);
+
   const debouncedDiscover = debounce(loadDiscoverResults, 350);
 
   elements.menuToggle.addEventListener("click", toggleMobileNavigation);
@@ -1690,27 +1835,28 @@ function setupEventListeners() {
     if (q) {
       elements.searchInput.value = q;
       performSearch(q);
+      elements.headerSearchHistory.hidden = true;
     }
   });
   // Header search history interactions
   if (elements.headerSearchInput && elements.headerSearchHistory) {
     elements.headerSearchInput.addEventListener("focus", () => {
       const list = getSearchHistory();
-      elements.headerSearchHistory.hidden = !list.length;
+      if (!elements.headerSearchInput.value.trim() && !list.length) {
+        elements.headerSearchHistory.hidden = true;
+        return;
+      }
+      debouncedHeaderSuggestions();
     });
 
     elements.headerSearchInput.addEventListener("input", (e) => {
-      const q = e.target.value.trim().toLowerCase();
-      const headerContainer = elements.headerSearchHistory;
-      if (!headerContainer) return;
-      const buttons = headerContainer.querySelectorAll(".search-history-item");
-      let anyVisible = false;
-      buttons.forEach((btn) => {
-        const match = btn.textContent.toLowerCase().includes(q);
-        btn.style.display = match ? "block" : "none";
-        if (match) anyVisible = true;
-      });
-      headerContainer.hidden = !anyVisible;
+      const value = e.target.value.trim();
+      if (!value) {
+        renderSearchHistory();
+        elements.headerSearchHistory.hidden = !getSearchHistory().length;
+        return;
+      }
+      debouncedHeaderSuggestions();
     });
 
     // Close header history when clicking outside
@@ -1726,7 +1872,15 @@ function setupEventListeners() {
     });
   }
   elements.searchForm.addEventListener("submit", handleSearch);
-  elements.searchInput.addEventListener("input", debouncedSearch);
+  elements.searchInput.addEventListener("input", () => {
+    const value = elements.searchInput.value.trim();
+    if (!value) {
+      renderSearchHistory();
+      return;
+    }
+    debouncedSearch();
+    debouncedSuggestions();
+  });
   elements.genreFilter.addEventListener("change", loadDiscoverResults);
   elements.sortFilter.addEventListener("change", loadDiscoverResults);
   elements.yearFilter.addEventListener("input", debouncedDiscover);
@@ -1786,12 +1940,14 @@ function setupEventListeners() {
     link.addEventListener("click", () => toggleSearchPanel(true));
   });
 
-  document.querySelectorAll('a[href="#header-search-input"]').forEach((link) => {
-    link.addEventListener("click", (e) => {
-      e.preventDefault();
-      if (elements.headerSearchInput) elements.headerSearchInput.focus();
+  document
+    .querySelectorAll('a[href="#header-search-input"]')
+    .forEach((link) => {
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (elements.headerSearchInput) elements.headerSearchInput.focus();
+      });
     });
-  });
 
   // header search is always visible now; no outside-click closing needed
 

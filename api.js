@@ -15,6 +15,7 @@ const REQUEST_TIMEOUT = 10000;
 
 // Simple in-memory cache with TTL and size limit to avoid unbounded growth
 const responseCache = new Map();
+const inFlightRequests = new Map();
 const CACHE_TTL = 1000 * 60 * 5; // 5 minutes
 const CACHE_MAX_ENTRIES = 300;
 
@@ -48,6 +49,10 @@ async function request(endpoint, params = {}) {
     responseCache.delete(cacheKey);
   }
 
+  if (inFlightRequests.has(cacheKey)) {
+    return inFlightRequests.get(cacheKey);
+  }
+
   // Evict if too many entries
   if (responseCache.size >= CACHE_MAX_ENTRIES) {
     // remove oldest entry
@@ -62,7 +67,6 @@ async function request(endpoint, params = {}) {
   const fetchWithRetries = async (attempts = 3, backoff = 350) => {
     try {
       const res = await fetch(url, { signal: controller.signal });
-      clearTimeout(timeout);
 
       if (res.status === 429 && attempts > 0) {
         // rate limited — wait and retry
@@ -83,6 +87,8 @@ async function request(endpoint, params = {}) {
     } catch (err) {
       // rethrow for outer logic
       throw err;
+    } finally {
+      clearTimeout(timeout);
     }
   };
 
@@ -94,10 +100,14 @@ async function request(endpoint, params = {}) {
     .catch((error) => {
       responseCache.delete(cacheKey);
       throw error;
+    })
+    .finally(() => {
+      inFlightRequests.delete(cacheKey);
     });
 
   // store pending promise
   responseCache.set(cacheKey, { promise: fetchPromise, ts: Date.now() });
+  inFlightRequests.set(cacheKey, fetchPromise);
 
   return fetchPromise;
 }

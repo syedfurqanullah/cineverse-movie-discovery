@@ -270,6 +270,7 @@ input {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  min-width: 0;
 }
 
 .icon-button,
@@ -342,6 +343,9 @@ input {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 100%;
   background: linear-gradient(
     180deg,
     rgba(255, 255, 255, 0.02),
@@ -363,6 +367,7 @@ input {
   top: calc(100% + 0.4rem);
   left: 0;
   right: 0;
+  width: min(100%, 24rem);
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: 0.6rem;
@@ -394,7 +399,9 @@ input {
 }
 
 .header-search-input {
-  min-width: 20rem;
+  min-width: 0;
+  width: 100%;
+  max-width: 20rem;
   padding: 0.55rem 0.75rem;
   background: transparent;
   border: 0;
@@ -445,6 +452,37 @@ input {
 
 .header-search-submit:active {
   transform: translateY(0);
+}
+
+@media (max-width: 900px) {
+  .header-container {
+    gap: 0.75rem;
+  }
+
+  .header-actions {
+    flex: 1 1 auto;
+    justify-content: flex-end;
+    min-width: 0;
+  }
+
+  .header-search {
+    flex: 1 1 auto;
+    width: auto;
+    max-width: 100%;
+    margin-left: 0.25rem;
+    margin-right: 0.25rem;
+    border-radius: 0.8rem;
+    box-shadow: 0 6px 14px rgba(2, 6, 23, 0.35);
+  }
+
+  .header-search-input {
+    max-width: none;
+    width: 100%;
+  }
+
+  .header-search-history {
+    width: min(100%, 19rem);
+  }
 }
 
 @media (max-width: 720px) {
@@ -668,13 +706,44 @@ input {
   gap: 0.45rem;
 }
 
+.search-history-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.search-history-row.is-compact {
+  width: 100%;
+}
+
 .search-history-item {
+  flex: 1 1 auto;
   padding: 0.45rem 0.65rem;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--color-border);
   color: var(--color-text);
   border-radius: var(--radius-sm);
   font-weight: 600;
+  text-align: left;
+}
+
+.search-history-delete {
+  width: 1.7rem;
+  height: 1.7rem;
+  display: inline-grid;
+  place-items: center;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  color: var(--color-text-muted);
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.search-history-delete:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--color-text);
 }
 
 .search-history-clear {

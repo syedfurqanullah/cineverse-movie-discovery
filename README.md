@@ -1,100 +1,81 @@
-
-# cineverse-movie-discovery
+# CineVerse Movie Discovery
 
 CineVerse is a premium, modern, and fully responsive movie discovery web app built with a focus on clean UI design, dynamic movie data, responsive layouts, and interactive user experiences.
 
-## Live Demo 
-CineVerse  — Movie Discovery App
-https://cineverse-movie-discovery.netlify.app/
+## Live Demo
 
-## 📸 Screenshots
+[View CineVerse Movie Discovery](https://cineverse-movie-discovery.netlify.app/)
 
-### Home
+## Features
 
-![CineVerse Home](./screenshots/home.png)
+- Fully responsive movie discovery UI
+- Trending, popular, top-rated, and upcoming sections
+- Genre, sort, and year-based discovery filters
+- Debounced movie search with history
+- Movie details modal with cast and trailer link
+- Watchlist and recently viewed persistence using LocalStorage
+- Loading skeletons, empty states, and error handling
 
-### Movie Discovery & Filters
-
-![CineVerse Movie Filters](./screenshots/movie%20filter.png)
-
-### Movie Details
-
-![CineVerse Movie Details](./screenshots/movie%20details.png)
-
-### Responsive Design
-
-![CineVerse Responsive Design](./screenshots/responsive%20design.png)
-
-## Key features
-
-- Fully Responsive Movie Discovery UI
-- Trending, Popular, Top Rated & Upcoming movies
-- Debounced movie search & search history
-- Genre, year & sorting filters
-- Movie details, cast & trailer
-- Watchlist & Recently Viewed
-- LocalStorage persistence
-- Skeleton loading & error states
-- API caching, request deduplication & retry handling
-
-## Technologies
+## Tech Stack
 
 - HTML5
-- Modern CSS3
+- CSS3
 - JavaScript (ES6+)
 - Fetch API
 - TMDB API
 - Netlify Functions
 - LocalStorage
 
-## Project structure
+## Project Structure
 
 ```text
 index.html
 style.css
 script.js
 api.js
-screenshots/
 assets/
+screenshots/
 netlify/
 └── functions/
     └── tmdb.js
 README.md
 ```
 
-## Run Locally
+## Local Development
 
-Open `index.html` directly in a browser, or run a local server:
+### Option 1: Open directly
+
+Open `index.html` in a browser.
+
+### Option 2: Run a local server
 
 ```bash
 python -m http.server 8000
 ```
 
-Then visit:
+Then open:
 
 ```text
 http://localhost:8000
-
-## Netlify local development
-
-This project uses a Netlify Function to keep the TMDB API key server-side.
-
-1. Create a local `.env` (do NOT commit it):
-
 ```
+
+### Netlify local development
+
+This app uses a Netlify Function to keep the TMDB API key on the server side.
+
+1. Create a local `.env` file and do not commit it:
+
+```bash
 TMDB_API_KEY=your_tmdb_api_key_here
 ```
 
-2. Install Netlify CLI if needed and run local dev (serves functions + site):
+2. Run the app locally with Netlify CLI:
 
 ```bash
-npx netlify-cli@latest login
 npx netlify-cli@latest dev
 ```
 
-3.  In production, add `TMDB_API_KEY` to your Netlify site Environment variables (Site settings → Build & deploy → Environment).
-
-```
+3. In production, add `TMDB_API_KEY` in Netlify environment variables under Site settings → Build & deploy.
 
 ## Notes
 
