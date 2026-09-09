@@ -207,22 +207,32 @@ async function initializeApp() {
    ========================================================= */
 
 async function loadMovieSections() {
-  const [trending, popular, topRated, upcoming] = await Promise.all([
-    getTrendingMovies(state.pages.trending),
-    getPopularMovies(state.pages.popular),
-    getTopRatedMovies(state.pages.topRated),
-    getUpcomingMovies(state.pages.upcoming),
-  ]);
+  // Start all requests in parallel but render each section as soon as its
+  // response arrives to avoid waiting for the slowest call.
+  const tasks = [
+    getTrendingMovies(state.pages.trending).then((trending) => {
+      state.trendingMovies = normalizeMovies(trending.results);
+      renderMovieGrid(state.trendingMovies, elements.trendingMovies);
+      return trending;
+    }),
+    getPopularMovies(state.pages.popular).then((popular) => {
+      state.popularMovies = normalizeMovies(popular.results);
+      renderMovieGrid(state.popularMovies, elements.popularMovies);
+      return popular;
+    }),
+    getTopRatedMovies(state.pages.topRated).then((topRated) => {
+      state.topRatedMovies = normalizeMovies(topRated.results);
+      renderMovieGrid(state.topRatedMovies, elements.topRatedMovies);
+      return topRated;
+    }),
+    getUpcomingMovies(state.pages.upcoming).then((upcoming) => {
+      state.upcomingMovies = normalizeMovies(upcoming.results);
+      renderMovieGrid(state.upcomingMovies, elements.upcomingMovies);
+      return upcoming;
+    }),
+  ];
 
-  state.trendingMovies = normalizeMovies(trending.results);
-  state.popularMovies = normalizeMovies(popular.results);
-  state.topRatedMovies = normalizeMovies(topRated.results);
-  state.upcomingMovies = normalizeMovies(upcoming.results);
-
-  renderMovieGrid(state.trendingMovies, elements.trendingMovies);
-  renderMovieGrid(state.popularMovies, elements.popularMovies);
-  renderMovieGrid(state.topRatedMovies, elements.topRatedMovies);
-  renderMovieGrid(state.upcomingMovies, elements.upcomingMovies);
+  await Promise.all(tasks);
 }
 
 async function loadMoreMovies(sectionKey, button) {
