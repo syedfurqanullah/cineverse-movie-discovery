@@ -1915,17 +1915,26 @@ input {
 
 /* Footer responsiveness improvements */
 @media (max-width: 980px) {
-  /* Reduce footer navigation columns on narrower screens */
-  .footer-navigation {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1rem;
-  }
-
   .footer-container {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 1.6rem;
     padding-top: 2.5rem;
     padding-bottom: 2.5rem;
+  }
+
+  .footer-brand {
+    max-width: 100%;
+  }
+
+  .footer-brand p {
+    max-width: 100%;
+    line-height: 1.7;
+    font-size: 0.95rem;
+  }
+
+  .footer-navigation {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
   }
 }
 
