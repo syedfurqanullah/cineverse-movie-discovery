@@ -9,8 +9,9 @@
     />
     <meta name="theme-color" content="#08090d" />
     <title>CineVerse - Movies Discovery</title>
-    <link rel="stylesheet" href="style.css" />
-    <link rel="icon" href="favicon.svg" />
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/responsive.css" />
   </head>
 
   <body>
@@ -54,7 +55,7 @@
               aria-label="Search"
             >
               <img
-                src="./assets/search-icon-2.svg"
+                src="./assets/icons/search-icon-2.svg"
                 alt="Search"
                 class="icon-favicon"
               />
@@ -63,10 +64,8 @@
               id="header-search-history"
               class="header-search-history"
               hidden
-              aria-hidden="true"
             ></div>
           </form>
-          <!-- search toggle removed; header search always visible -->
 
           <a
             href="#watchlist"
@@ -135,7 +134,7 @@
       </div>
     </section>
 
-    <main id="main-content" role="main">
+    <main id="main-content">
       <!-- Cinematic hero populated from trending movie data. -->
       <section id="home" class="hero-section" aria-labelledby="hero-title">
         <div class="hero-background">
@@ -210,20 +209,6 @@
             >
               &#8594;
             </button>
-          </div>
-        </div>
-      </section>
-
-      <!-- Portfolio feature summary without adding a dashboard. -->
-      <section
-        class="portfolio-showcase"
-        aria-labelledby="project-overview-title"
-      >
-        <div class="container">
-          <!-- Project Snapshot header and title removed as requested -->
-
-          <div class="showcase-grid">
-            <!-- Premium showcase cards removed as requested -->
           </div>
         </div>
       </section>
@@ -450,24 +435,13 @@
           ></div>
         </section>
 
-        <!-- Shared empty, loading and error states for API-driven content. -->
+        <!-- Empty and error states remain hidden until the app needs them. -->
         <section class="empty-state" id="empty-state" hidden aria-live="polite">
           <div class="empty-state-content">
             <span class="empty-state-icon" aria-hidden="true">&#127916;</span>
             <h2>No Movies Found</h2>
             <p>Try searching with a different movie title.</p>
           </div>
-        </section>
-
-        <section
-          class="loading-state"
-          id="loading-state"
-          hidden
-          aria-live="polite"
-          aria-busy="true"
-        >
-          <div class="loading-spinner" aria-hidden="true"></div>
-          <p>Loading movies...</p>
         </section>
 
         <section
@@ -497,8 +471,6 @@
       class="movie-modal"
       id="movie-modal"
       aria-labelledby="modal-movie-title"
-      role="dialog"
-      aria-modal="true"
     >
       <div class="movie-modal-content">
         <header class="modal-header">
@@ -581,7 +553,6 @@
               >
                 Watch Trailer
               </a>
-              <!-- TMDB external link intentionally removed for focused details view -->
             </div>
 
             <section
@@ -742,7 +713,7 @@
       </a>
       <a href="#header-search-input" class="bottom-nav-link">
         <img
-          src="./assets/search-icon-2.svg"
+          src="./assets/icons/search-icon-2.svg"
           alt=""
           class="icon-favicon"
           aria-hidden="true"
@@ -759,6 +730,6 @@
       </a>
     </nav>
 
-    <script type="module" src="script.js"></script>
+    <script type="module" src="js/main.js"></script>
   </body>
 </html>

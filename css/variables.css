@@ -1,0 +1,39 @@
+/* CineVerse design tokens: colors, typography, layout, and motion values. */
+
+:root {
+  --color-bg: #07080d;
+  --color-bg-soft: #0b0d14;
+  --color-surface: #10131c;
+  --color-surface-light: #171b27;
+  --color-border: rgba(255, 255, 255, 0.08);
+
+  --color-text: #f5f5f7;
+  --color-text-soft: #a7aab5;
+  --color-text-muted: #707482;
+
+  --color-primary: #e11d48;
+  --color-primary-light: #fb7185;
+  --color-primary-dark: #9f1239;
+  --color-accent: #f59e0b;
+  --color-star: #facc15;
+  --color-danger: #f87171;
+
+  --font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  --container-width: 1440px;
+  --content-padding: clamp(1rem, 3vw, 3rem);
+
+  --radius-sm: 0.5rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+
+  --shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 12px 40px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 24px 70px rgba(0, 0, 0, 0.5);
+
+  --transition-fast: 180ms ease;
+  --transition-normal: 280ms ease;
+  --focus-ring: rgba(251, 113, 133, 0.95);
+}

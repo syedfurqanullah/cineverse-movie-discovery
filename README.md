@@ -10,19 +10,19 @@ CineVerse is a premium, modern, and fully responsive movie discovery web app bui
 
 ### Home Page
 
-![CineVerse Home](./screenshots/home.png)
+![CineVerse Home](./assets/screenshots/home.png)
 
 ### Movie Discovery & Filters
 
-![CineVerse Movie Filter](./screenshots/movie%20filter.png)
+![CineVerse Movie Filter](./assets/screenshots/movie%20filter.png)
 
 ### Movie Details
 
-![CineVerse Movie Details](./screenshots/movie%20details.png)
+![CineVerse Movie Details](./assets/screenshots/movie%20details.png)
 
 ### Responsive Design
 
-![CineVerse Responsive](./screenshots/responsive%20design.png)
+![CineVerse Responsive](./assets/screenshots/responsive%20design.png)
 
 ## Features
 
@@ -48,11 +48,24 @@ CineVerse is a premium, modern, and fully responsive movie discovery web app bui
 
 ```text
 index.html
-style.css
-script.js
-api.js
+css/
+├── variables.css
+├── style.css
+└── responsive.css
+js/
+├── main.js
+├── api.js
+├── ui.js
+├── search.js
+├── watchlist.js
+└── storage.js
 assets/
-screenshots/
+├── search-icon-2.svg
+└── screenshots/
+    ├── home.png
+    ├── movie details.png
+    ├── movie filter.png
+    └── responsive design.png
 netlify/
 └── functions/
     └── tmdb.js
@@ -63,7 +76,8 @@ README.md
 
 ### Option 1: Open directly
 
-Open `index.html` in a browser.
+Open index.html in a browser for the static UI preview. API-backed features
+require the local server or Netlify development setup below.
 
 ### Option 2: Run a local server
 

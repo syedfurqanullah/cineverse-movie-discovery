@@ -15,7 +15,6 @@ const REQUEST_TIMEOUT = 10000;
 
 // Simple in-memory cache with TTL and size limit to avoid unbounded growth
 const responseCache = new Map();
-const inFlightRequests = new Map();
 const CACHE_TTL = 1000 * 60 * 5; // 5 minutes
 const CACHE_MAX_ENTRIES = 300;
 
@@ -28,7 +27,11 @@ async function request(endpoint, params = {}) {
   // Build request to serverless proxy. The proxy will append the API key
   // server-side; the browser must never send the key.
   const url = new URL(API_BASE_URL, window.location.origin);
-  const searchParams = new URLSearchParams({ endpoint, language: "en-US", ...params });
+  const searchParams = new URLSearchParams({
+    endpoint,
+    language: "en-US",
+    ...params,
+  });
   url.search = searchParams.toString();
   const cacheKey = url.toString();
 
@@ -47,10 +50,6 @@ async function request(endpoint, params = {}) {
 
     // stale entry
     responseCache.delete(cacheKey);
-  }
-
-  if (inFlightRequests.has(cacheKey)) {
-    return inFlightRequests.get(cacheKey);
   }
 
   // Evict if too many entries
@@ -102,13 +101,11 @@ async function request(endpoint, params = {}) {
       throw error;
     })
     .finally(() => {
-      inFlightRequests.delete(cacheKey);
+      clearTimeout(timeout);
     });
 
   // store pending promise
   responseCache.set(cacheKey, { promise: fetchPromise, ts: Date.now() });
-  inFlightRequests.set(cacheKey, fetchPromise);
-
   return fetchPromise;
 }
 
